@@ -37,10 +37,11 @@ class ProductFromPos(models.Model):
             type = 'consu'
         elif vals.get('type') == 'Service':
             type = 'service'
-        category = self.env['product.category'].search([('name', '=', vals.get('category'))], limit=1)
-        uom_id = self.env['uom.uom'].search([('name', '=', vals.get('unit'))], limit=1)
+        category = self.env['product.category'].search([('name', '=', 'All')], limit=1)
+        uom_id = self.env['uom.uom'].search([('name', '=', 'Unidad')], limit=1)
         new_vals = {
             'name': vals.get('name'),
+            'barcode': vals.get('barcode'),
             'display_name': vals.get('name'),
             'type': type,
             'categ_id': category.id if category else None,
@@ -56,7 +57,7 @@ class ProductFromPos(models.Model):
         new_vals['standard_price'] = vals.get('price') if vals.get('price') else 1
         new_vals['pos_categ_id'] = [rec.pos_categ_id.id] if rec.pos_categ_id else None
         new_vals['taxes_id'] = [rec.taxes_id.id] if rec.taxes_id else []
-        new_vals['barcode'] = rec.barcode
+        #new_vals['barcode'] = rec.barcode
         new_vals['default_code'] = rec.default_code
         new_vals['to_weight'] = rec.to_weight
         new_vals['uom_id'] = [rec.uom_id.id, rec.uom_id.name]

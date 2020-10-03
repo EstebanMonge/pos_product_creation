@@ -60,6 +60,7 @@ var ProductCreationWidget = PopupWidget.extend({
     click_confirm: function(){
         var self = this;
         var name = this.$('.name').val();
+        var barcode = this.$('.barcode').val();
         var type = this.$('.type').val();
         var category = this.$('.category').val();
         var unit = this.$('.uom').val();
@@ -70,6 +71,7 @@ var ProductCreationWidget = PopupWidget.extend({
         else {
              var product_vals = {
                 'name': name,
+                'barcode': barcode,
                 'type': type,
                 'category': category,
                 'price': price,
