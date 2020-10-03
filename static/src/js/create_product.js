@@ -35,6 +35,45 @@ chrome.OrderSelectorWidget.include({
                 'units':unit,
             });
         });
+        this.$('.update-price').click(function(event){
+            self.gui.show_popup('update_price');
+        });
+    },
+});
+var UpdatePriceWidget = PopupWidget.extend({
+    template: 'UpdatePriceWidget',
+    events: {
+        'click .button.cancel':  'click_cancel',
+        'click .button.confirm': 'click_confirm',
+    },
+    click_confirm: function(){
+        var self = this;
+        var name = this.$('.name').val();
+        var barcode = this.$('.barcode').val();
+        var type = this.$('.type').val();
+        var category = this.$('.category').val();
+        var unit = this.$('.uom').val();
+        var price = this.$('.price').val();
+        if(!name || !price) {
+            alert("Please fill Name & price for the Product!")
+        }
+        else {
+             var product_vals = {
+                'barcode': barcode,
+                'category': category,
+            };
+            rpc.query({
+                    model: 'product.product',
+                    method: 'create_product_pos',
+                    args: [product_vals],
+                }).then(function (products){
+                    self.pos.db.add_products(_.map([products], function (product) {
+                        product.categ = _.findWhere(self.pos.product_categories, {'id': product.categ_id[0]});
+                        return new models.Product({}, product);
+                    }));
+                });
+            this.gui.close_popup();
+        }
     },
 });
 var ProductCreationWidget = PopupWidget.extend({
@@ -65,6 +104,7 @@ var ProductCreationWidget = PopupWidget.extend({
         var category = this.$('.category').val();
         var unit = this.$('.uom').val();
         var price = this.$('.price').val();
+        var cost = this.$('.cost').val();
         if(!name || !price) {
             alert("Please fill Name & price for the Product!")
         }
@@ -75,6 +115,7 @@ var ProductCreationWidget = PopupWidget.extend({
                 'type': type,
                 'category': category,
                 'price': price,
+                'cost': cost,
                 'unit': unit
             };
             rpc.query({
@@ -98,5 +139,5 @@ var ProductCreationWidget = PopupWidget.extend({
     },
 });
 gui.define_popup({name:'product_create', widget: ProductCreationWidget});
-
+gui.define_popup({name:'update_price', widget: UpdatePriceWidget});
 });
