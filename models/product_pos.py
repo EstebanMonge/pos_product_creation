@@ -22,11 +22,25 @@
 #
 ##############################################################################
 
+import logging
 from odoo import models, api
 
-
+_logger = logging.getLogger(__name__)
+	
 class ProductFromPos(models.Model):
     _inherit = 'product.product'
+
+    @api.model
+    def update_product_pos(self, vals):
+        type = None        
+        new_vals = {
+            'barcode': vals.get('barcode'),
+            'list_price': vals.get('price') if vals.get('price') else 1,
+            'standard_price': vals.get('cost') if vals.get('cost') else 1
+            }
+        self.env['product.product'].search([('barcode', '=', new_vals['barcode'])], limit=1).write({'list_price': new_vals['list_price']})
+        self.env['product.product'].search([('barcode', '=', new_vals['barcode'])], limit=1).write({'standard_price': new_vals['standard_price']})
+        #return new_vals
 
     @api.model
     def create_product_pos(self, vals):
@@ -46,6 +60,7 @@ class ProductFromPos(models.Model):
             'type': type,
             'categ_id': category.id if category else None,
             'list_price': vals.get('price') if vals.get('price') else 1,
+            'standard_price': vals.get('cost') if vals.get('cost') else 1,
             'available_in_pos': True,
             'sale_ok': True,
             'uom_id': uom_id.id,
@@ -54,10 +69,9 @@ class ProductFromPos(models.Model):
         rec = self.env['product.product'].create(new_vals)
         new_vals['id'] = rec.id
         new_vals['lst_price'] = vals.get('price') if vals.get('price') else 1
-        new_vals['standard_price'] = vals.get('price') if vals.get('price') else 1
+        new_vals['standard_price'] = vals.get('cost') if vals.get('cost') else 1
         new_vals['pos_categ_id'] = [rec.pos_categ_id.id] if rec.pos_categ_id else None
         new_vals['taxes_id'] = [rec.taxes_id.id] if rec.taxes_id else []
-        #new_vals['barcode'] = rec.barcode
         new_vals['default_code'] = rec.default_code
         new_vals['to_weight'] = rec.to_weight
         new_vals['uom_id'] = [rec.uom_id.id, rec.uom_id.name]

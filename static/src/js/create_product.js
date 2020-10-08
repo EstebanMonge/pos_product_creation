@@ -42,37 +42,46 @@ chrome.OrderSelectorWidget.include({
 });
 var UpdatePriceWidget = PopupWidget.extend({
     template: 'UpdatePriceWidget',
+    init: function(parent, args) {
+        this._super(parent, args);
+        this.options = {};
+    },
     events: {
         'click .button.cancel':  'click_cancel',
         'click .button.confirm': 'click_confirm',
     },
+    show: function(options){
+        options = options || {};
+        this._super(options);
+        this.renderElement();
+        this.$('.barcode').focus();
+    },
     click_confirm: function(){
         var self = this;
-        var name = this.$('.name').val();
         var barcode = this.$('.barcode').val();
-        var type = this.$('.type').val();
-        var category = this.$('.category').val();
-        var unit = this.$('.uom').val();
         var price = this.$('.price').val();
-        if(!name || !price) {
-            alert("Please fill Name & price for the Product!")
+        var cost = this.$('.cost').val();
+        if(!barcode || !price) {
+            alert("Please fill Barcode & Price for the Product!")
         }
         else {
              var product_vals = {
                 'barcode': barcode,
-                'category': category,
+                'price': price,
+                'cost': cost,
             };
             rpc.query({
                     model: 'product.product',
-                    method: 'create_product_pos',
+                    method: 'update_product_pos',
                     args: [product_vals],
-                }).then(function (products){
-                    self.pos.db.add_products(_.map([products], function (product) {
-                        product.categ = _.findWhere(self.pos.product_categories, {'id': product.categ_id[0]});
-                        return new models.Product({}, product);
-                    }));
                 });
             this.gui.close_popup();
+        }
+    },
+    click_cancel: function(){
+        this.gui.close_popup();
+        if (this.options.cancel) {
+            this.options.cancel.call(this);
         }
     },
 });
@@ -94,7 +103,7 @@ var ProductCreationWidget = PopupWidget.extend({
         this.category = options.category;
         this.units = options.units;
         this.renderElement();
-        this.$('.name').focus();
+        this.$('.barcode').focus();
     },
     click_confirm: function(){
         var self = this;
@@ -106,7 +115,7 @@ var ProductCreationWidget = PopupWidget.extend({
         var price = this.$('.price').val();
         var cost = this.$('.cost').val();
         if(!name || !price) {
-            alert("Please fill Name & price for the Product!")
+            alert("Please fill Name & Price for the Product!")
         }
         else {
              var product_vals = {
