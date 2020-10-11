@@ -15,6 +15,11 @@ models.load_models({
         loaded: function(self,categories){
             self.categories = categories;
         },
+        model:  'account.tax',
+        fields: ['name','type_tax_use'],
+        loaded: function(self,taxes){
+            self.taxes = taxes;
+        },
     });
 
 chrome.OrderSelectorWidget.include({
@@ -23,16 +28,23 @@ chrome.OrderSelectorWidget.include({
         this._super();
         var categ = [];
         var unit = [];
+        var taxe = [];
         for (var i in self.pos.categories){
             categ.push(self.pos.categories[i].name);
         }
         for (var i in self.pos.units){
             unit.push(self.pos.units[i].name);
         }
+        for (var i in self.pos.taxes){
+            if ( self.pos.taxes[i].type_tax_use == 'sale') {
+                taxe.push(self.pos.taxes[i].name);
+	    }
+        }
         this.$('.add-product').click(function(event){
             self.gui.show_popup('product_create',{
                 'category': categ,
                 'units':unit,
+                'tax':taxe,
             });
         });
         this.$('.update-price').click(function(event){
@@ -92,6 +104,7 @@ var ProductCreationWidget = PopupWidget.extend({
         this.options = {};
         this.category = [];
         this.units = [];
+        this.tax = [];
     },
     events: {
         'click .button.cancel':  'click_cancel',
@@ -102,6 +115,7 @@ var ProductCreationWidget = PopupWidget.extend({
         this._super(options);
         this.category = options.category;
         this.units = options.units;
+        this.tax = options.tax;
         this.renderElement();
         this.$('.barcode').focus();
     },
@@ -114,6 +128,7 @@ var ProductCreationWidget = PopupWidget.extend({
         var unit = this.$('.uom').val();
         var price = this.$('.price').val();
         var cost = this.$('.cost').val();
+        var tax = this.$('.tax').val();
         if(!name || !price) {
             alert("Please fill Name & Price for the Product!")
         }
@@ -125,7 +140,8 @@ var ProductCreationWidget = PopupWidget.extend({
                 'category': category,
                 'price': price,
                 'cost': cost,
-                'unit': unit
+                'unit': unit,
+                'tax': tax
             };
             rpc.query({
                     model: 'product.product',

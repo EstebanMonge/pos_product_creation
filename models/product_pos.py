@@ -40,7 +40,6 @@ class ProductFromPos(models.Model):
             }
         self.env['product.product'].search([('barcode', '=', new_vals['barcode'])], limit=1).write({'list_price': new_vals['list_price']})
         self.env['product.product'].search([('barcode', '=', new_vals['barcode'])], limit=1).write({'standard_price': new_vals['standard_price']})
-        #return new_vals
 
     @api.model
     def create_product_pos(self, vals):
@@ -53,6 +52,8 @@ class ProductFromPos(models.Model):
             type = 'service'
         category = self.env['product.category'].search([('name', '=', 'All')], limit=1)
         uom_id = self.env['uom.uom'].search([('name', '=', 'Unidad')], limit=1)
+        tax_id = self.env['account.tax'].search([('name', '=', vals.get('tax')),('type_tax_use','=','sale')], limit=1)
+        _logger.info(tax_id.name)
         new_vals = {
             'name': vals.get('name'),
             'barcode': vals.get('barcode'),
@@ -64,14 +65,14 @@ class ProductFromPos(models.Model):
             'available_in_pos': True,
             'sale_ok': True,
             'uom_id': uom_id.id,
-            'uom_po_id': uom_id.id
+            'uom_po_id': uom_id.id,
+            'taxes_id': [(6, 0, [tax_id.id])]
             }
         rec = self.env['product.product'].create(new_vals)
         new_vals['id'] = rec.id
         new_vals['lst_price'] = vals.get('price') if vals.get('price') else 1
         new_vals['standard_price'] = vals.get('cost') if vals.get('cost') else 1
         new_vals['pos_categ_id'] = [rec.pos_categ_id.id] if rec.pos_categ_id else None
-        new_vals['taxes_id'] = [rec.taxes_id.id] if rec.taxes_id else []
         new_vals['default_code'] = rec.default_code
         new_vals['to_weight'] = rec.to_weight
         new_vals['uom_id'] = [rec.uom_id.id, rec.uom_id.name]
