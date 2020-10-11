@@ -17,8 +17,8 @@ models.load_models({
         },
         model:  'account.tax',
         fields: ['name','type_tax_use'],
-        loaded: function(self,taxes){
-            self.taxes = taxes;
+        loaded: function(self,staxes){
+            self.staxes = staxes;
         },
     });
 
@@ -35,9 +35,9 @@ chrome.OrderSelectorWidget.include({
         for (var i in self.pos.units){
             unit.push(self.pos.units[i].name);
         }
-        for (var i in self.pos.taxes){
-            if ( self.pos.taxes[i].type_tax_use == 'sale') {
-                taxe.push(self.pos.taxes[i].name);
+        for (var i in self.pos.staxes){
+            if ( self.pos.staxes[i].type_tax_use == 'sale') {
+                taxe.push(self.pos.staxes[i].name);
 	    }
         }
         this.$('.add-product').click(function(event){
