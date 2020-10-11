@@ -59,6 +59,7 @@ var UpdatePriceWidget = PopupWidget.extend({
         this.options = {};
     },
     events: {
+        'blur .barcode':  'blur_barcode',
         'click .button.cancel':  'click_cancel',
         'click .button.confirm': 'click_confirm',
     },
@@ -67,6 +68,24 @@ var UpdatePriceWidget = PopupWidget.extend({
         this._super(options);
         this.renderElement();
         this.$('.barcode').focus();
+    },
+    blur_barcode: function(){
+	var self = this;
+        var barcode = this.$('.barcode').val();
+	if (!barcode) {
+            alert("Please fill Barcode");
+	}
+	else {
+	    var product = self.pos.db.get_product_by_barcode(barcode);
+	    if (!product) {
+            alert("Product not found");
+	    }
+	    else {
+            	$(document).find(".name").text(product.display_name);
+            	$(document).find(".price").val(product.list_price);
+           	$(document).find(".cost").val(product.standard_price);
+	    }
+	}
     },
     click_confirm: function(){
         var self = this;
