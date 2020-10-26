@@ -94,16 +94,20 @@ var UpdatePriceWidget = PopupWidget.extend({
     click_confirm: function(){
         var self = this;
         var barcode = this.$('.barcode').val();
+        var name = this.$('.name').val();
         var price = this.$('.price').val();
         var cost = this.$('.cost').val();
+        var tax = this.$('.tax').val();
         if(!barcode || !price) {
             alert("Please fill Barcode & Price for the Product!")
         }
         else {
              var product_vals = {
                 'barcode': barcode,
+                'name': name,
                 'price': price,
                 'cost': cost,
+                'tax': tax,
             };
             rpc.query({
                     model: 'product.product',

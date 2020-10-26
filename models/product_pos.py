@@ -34,12 +34,17 @@ class ProductFromPos(models.Model):
     def update_product_pos(self, vals):
         type = None        
         new_vals = {
+            'name': vals.get('name'),
             'barcode': vals.get('barcode'),
             'list_price': vals.get('price') if vals.get('price') else 1,
             'standard_price': vals.get('cost') if vals.get('cost') else 1
             }
+        _logger.info(new_vals['name'])
+        tax_id = self.env['account.tax'].search([('name', '=', vals.get('tax')),('type_tax_use','=','sale')], limit=1)
+        self.env['product.template'].search([('barcode', '=', new_vals['barcode'])], limit=1).write({'name': new_vals['name']})
         self.env['product.product'].search([('barcode', '=', new_vals['barcode'])], limit=1).write({'list_price': new_vals['list_price']})
         self.env['product.product'].search([('barcode', '=', new_vals['barcode'])], limit=1).write({'standard_price': new_vals['standard_price']})
+        self.env['product.product'].search([('barcode', '=', new_vals['barcode'])], limit=1).write({'taxes_id': [(6, 0, [tax_id.id])]})
 
     @api.model
     def create_product_pos(self, vals):
