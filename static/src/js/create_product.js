@@ -48,7 +48,9 @@ chrome.OrderSelectorWidget.include({
             });
         });
         this.$('.update-price').click(function(event){
-            self.gui.show_popup('update_price');
+            self.gui.show_popup('update_price',{
+                'tax':taxe,
+            });
         });
     },
 });
@@ -57,6 +59,7 @@ var UpdatePriceWidget = PopupWidget.extend({
     init: function(parent, args) {
         this._super(parent, args);
         this.options = {};
+        this.tax = [];
     },
     events: {
         'blur .barcode':  'blur_barcode',
@@ -66,6 +69,7 @@ var UpdatePriceWidget = PopupWidget.extend({
     show: function(options){
         options = options || {};
         this._super(options);
+        this.tax = options.tax;
         this.renderElement();
         this.$('.barcode').focus();
     },
@@ -81,7 +85,7 @@ var UpdatePriceWidget = PopupWidget.extend({
             alert("Product not found");
 	    }
 	    else {
-            	$(document).find(".name").text(product.display_name);
+            	$(document).find(".name").val(product.display_name);
             	$(document).find(".price").val(product.list_price);
            	$(document).find(".cost").val(product.standard_price);
 	    }
