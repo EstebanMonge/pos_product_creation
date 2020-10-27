@@ -42,7 +42,7 @@
                             <t t-esc='item'/>
                         </option>
                     </t>
-                </select> -->
+                </select> --> 
                 Tax:
                 <select class="tax" style="width:15%;height:30px;border-radius:5px;">
                     <t t-foreach="widget.tax || []" t-as="item">
@@ -92,7 +92,7 @@
                             <t t-esc='item'/>
                         </option>
                     </t>
-                </select>-->
+                </select>
                 Tax:
                 <select class="tax" style="width:15%;height:30px;border-radius:5px;">
                     <t t-foreach="widget.tax || []" t-as="item">
@@ -100,7 +100,7 @@
                             <t t-esc='item'/>
                         </option>
                     </t>
-                </select>
+                </select>-->
                 <span /><span />Price : <input class="price" type='text' style="width:18%;height:10px !important;border-radius:5px;"></input>
                 <span /><span />Cost : <input class="cost" type='text' style="width:18%;height:10px !important;border-radius:5px;"></input>
                 <div class="footer">

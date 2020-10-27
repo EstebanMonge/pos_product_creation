@@ -59,7 +59,7 @@ var UpdatePriceWidget = PopupWidget.extend({
     init: function(parent, args) {
         this._super(parent, args);
         this.options = {};
-        this.tax = [];
+        //this.tax = [];
     },
     events: {
         'blur .barcode':  'blur_barcode',
@@ -69,18 +69,20 @@ var UpdatePriceWidget = PopupWidget.extend({
     show: function(options){
         options = options || {};
         this._super(options);
-        this.tax = options.tax;
+        //this.tax = options.tax;
         this.renderElement();
         this.$('.barcode').focus();
     },
     blur_barcode: function(){
+	if (!$($(document).find(".modal-dialog-update-price")[0]).hasClass('oe_hidden')) {
 	var self = this;
         var barcode = this.$('.barcode').val();
-	if (!barcode) {
+	if (!barcode && !$($(document).find(".modal-dialog-update-price")[0]).hasClass('oe_hidden')) {
             alert("Please fill Barcode");
 	}
 	else {
 	    var product = self.pos.db.get_product_by_barcode(barcode);
+	    alert(product.taxes_id.name);
 	    if (!product) {
             alert("Product not found");
 	    }
@@ -88,8 +90,10 @@ var UpdatePriceWidget = PopupWidget.extend({
             	$(document).find(".name").val(product.display_name);
             	$(document).find(".price").val(product.list_price);
            	$(document).find(".cost").val(product.standard_price);
+           	//$(document).find(".tax").val(product.tax);
 	    }
 	}
+       }
     },
     click_confirm: function(){
         var self = this;
@@ -97,7 +101,7 @@ var UpdatePriceWidget = PopupWidget.extend({
         var name = this.$('.name').val();
         var price = this.$('.price').val();
         var cost = this.$('.cost').val();
-        var tax = this.$('.tax').val();
+        //var tax = this.$('.tax').val();
         if(!barcode || !price) {
             alert("Please fill Barcode & Price for the Product!")
         }
@@ -107,7 +111,7 @@ var UpdatePriceWidget = PopupWidget.extend({
                 'name': name,
                 'price': price,
                 'cost': cost,
-                'tax': tax,
+                //'tax': tax,
             };
             rpc.query({
                     model: 'product.product',
