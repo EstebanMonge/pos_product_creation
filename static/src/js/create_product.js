@@ -82,7 +82,6 @@ var UpdatePriceWidget = PopupWidget.extend({
 	}
 	else {
 	    var product = self.pos.db.get_product_by_barcode(barcode);
-	    alert(product.taxes_id.name);
 	    if (!product) {
             alert("Product not found");
 	    }
